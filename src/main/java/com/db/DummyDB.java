@@ -10,25 +10,26 @@ import java.util.stream.Collectors;
 
 public class DummyDB {
 
-    private static Map<Long, Employee> db = new HashMap<>();
+    private static final Map<Long, Employee> db = new HashMap<>();
     private static Connection conn = null;
     private static Statement statement;
     private static PreparedStatement prepareStatement;
-    private String url = "jdbc:mysql://localhost:3306/demo001";
-    private String username = "demo";
-    private String password = "Password@1234";
+    private final String url = "jdbc:mysql://localhost:3306/demo001";
+    private final String username = "demo";
+    private final String password = "Password@1234";
 
-    public DummyDB()
-    {
+    public DummyDB() {
+        System.out.print("Create dummy DB...");
         try {
             Class driver_class = Class.forName("com.mysql.cj.jdbc.Driver");
             Driver driver = (Driver) driver_class.newInstance();
             DriverManager.registerDriver(driver);
-            conn = DriverManager.getConnection(url,username,password);
+            conn = DriverManager.getConnection(url, username, password);
+            System.out.print("Connect to DB...");
             statement = conn.createStatement();
-            ResultSet rs=statement.executeQuery("select * from employees");
-            while(rs.next()) {
-                db.put(rs.getLong("id"), new Employee(rs.getLong("id"),rs.getString("name"),rs.getString("lastname"),rs.getString("email")));
+            ResultSet rs = statement.executeQuery("select * from employees");
+            while (rs.next()) {
+                db.put(rs.getLong("id"), new Employee(rs.getLong("id"), rs.getString("name"), rs.getString("lastname"), rs.getString("email")));
             }
             rs.close();
         } catch (Exception e) {
@@ -37,13 +38,14 @@ public class DummyDB {
     }
 
     public Employee insert(Employee employee) {
+        System.out.print("Insert employee into dummy DB...");
         String insertSQL = "INSERT INTO employees ( id, name, lastname, email) VALUES ( ?,?,?,?)";
         try {
-            prepareStatement = conn.prepareStatement(insertSQL,Statement.RETURN_GENERATED_KEYS);
-            prepareStatement.setLong(1,employee.getId());
+            prepareStatement = conn.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+            prepareStatement.setLong(1, employee.getId());
             prepareStatement.setString(2, employee.getName());
-            prepareStatement.setString(3,employee.getLastname());
-            prepareStatement.setString(4,employee.getEmail());
+            prepareStatement.setString(3, employee.getLastname());
+            prepareStatement.setString(4, employee.getEmail());
             int affectedRows = prepareStatement.executeUpdate();
             // check the affected rows
             if (affectedRows > 0) {
@@ -60,14 +62,15 @@ public class DummyDB {
     }
 
     public Employee update(Employee employee) {
+        System.out.print("Update employee into dummy DB...");
         String updateSQL = "UPDATE employees SET id = ?, name = ?, lastname = ?, email = ? WHERE  id = ?";
         try {
-            prepareStatement = conn.prepareStatement(updateSQL,Statement.RETURN_GENERATED_KEYS);
-            prepareStatement.setLong(1,employee.getId());
+            prepareStatement = conn.prepareStatement(updateSQL, Statement.RETURN_GENERATED_KEYS);
+            prepareStatement.setLong(1, employee.getId());
             prepareStatement.setString(2, employee.getName());
-            prepareStatement.setString(3,employee.getLastname());
-            prepareStatement.setString(4,employee.getEmail());
-            prepareStatement.setLong(5,employee.getId());
+            prepareStatement.setString(3, employee.getLastname());
+            prepareStatement.setString(4, employee.getEmail());
+            prepareStatement.setLong(5, employee.getId());
             int affectedRows = prepareStatement.executeUpdate();
             // check the affected rows
             if (affectedRows > 0) {
@@ -84,10 +87,11 @@ public class DummyDB {
     }
 
     public void delete(Long id) {
+        System.out.print("Delete employee from dummy DB...");
         String deleteSQL = "DELETE FROM employees WHERE  id = ?";
         try {
-            prepareStatement = conn.prepareStatement(deleteSQL,Statement.RETURN_GENERATED_KEYS);
-            prepareStatement.setLong(1,id);
+            prepareStatement = conn.prepareStatement(deleteSQL, Statement.RETURN_GENERATED_KEYS);
+            prepareStatement.setLong(1, id);
             int affectedRows = prepareStatement.executeUpdate();
             // check the affected rows
             if (affectedRows > 0) {
@@ -106,12 +110,13 @@ public class DummyDB {
     }
 
     public List<Employee> getAll() {
+        System.out.print("Get all employees from dummy DB...");
         try {
             ResultSet rs = statement.executeQuery("select * from employees");
             while (rs.next()) {
                 db.put(rs.getLong("id"), new Employee(rs.getLong("id"), rs.getString("name"), rs.getString("lastname"), rs.getString("email")));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return db.values().stream().collect(Collectors.toList());

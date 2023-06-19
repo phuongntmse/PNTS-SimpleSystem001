@@ -3,13 +3,9 @@ package com.model;
 
 public class Employee {
 
-    //@JsonProperty("id")
     private Long id;
-    //@JsonProperty("name")
     private String name;
-    //@JsonProperty("lastname")
     private String lastname;
-    //@JsonProperty("email")
     private String email;
 
     public Employee(Long id, String name, String lastname, String email) {
